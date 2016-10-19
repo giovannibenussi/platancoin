@@ -1,5 +1,7 @@
+require 'digest'
+
 class CuentasController < ApplicationController
-  before_action :set_cuenta, only: [:show, :edit, :update, :destroy]
+  before_action :set_cuenta, only: [:edit, :update, :destroy]
 
   # GET /cuentas
   # GET /cuentas.json
@@ -10,6 +12,15 @@ class CuentasController < ApplicationController
   # GET /cuentas/1
   # GET /cuentas/1.json
   def show
+      direccion = Digest::SHA256.base64digest params[:id]
+      @cuenta = Cuenta.find_by 'direccion', direccion
+      # If nil, create one
+      if @cuenta.nil?
+          @cuenta = Cuenta.new
+          @cuenta.direccion = direccion
+          @cuenta.saldo     = 0
+          @cuenta.save!
+      end
   end
 
   # GET /cuentas/new
